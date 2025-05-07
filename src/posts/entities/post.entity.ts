@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Post {
@@ -8,6 +8,9 @@ export class Post {
 
   @Column()
   caption: string;
+
+  @Column()
+  content: string;
 
   @Column()
   imageUrl: string;

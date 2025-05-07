@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
-import { User } from './dto/user.entity';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +16,7 @@ export class UsersController {
 
     // **try catch лучше в контроллере или в сервисе?
     @Get(':id')
-    async getById(@Param('id') id: string) {
+    async getById(@Param('id', ParseUUIDPipe) id: string) {
         try {
             return await this.usersService.findUser(id);
         } catch (err) {
@@ -33,7 +33,7 @@ export class UsersController {
     // **Нужны ли отдельные DTO для обновления и создания?
     @Put(':id')
     updateUser(
-        @Param('id') id: string,
+        @Param('id', ParseUUIDPipe) id: string,
         @Body() updateUserDto: UserDto
     ) {
         return this.usersService.updateUser(id, updateUserDto);
