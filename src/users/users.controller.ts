@@ -45,4 +45,15 @@ export class UsersController {
         return { message: 'User deleted successfully' };
     }
 
+
+    @Get(':id/posts')
+    async getPostsByUserId(@Param('id', ParseUUIDPipe) id: string) { 
+        try {
+            return await this.usersService.findUserPosts(id);
+        } catch (err) {
+            throw new NotFoundException('User not found');
+        }
+    }
+    
+
 }

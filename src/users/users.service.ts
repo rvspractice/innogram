@@ -51,4 +51,11 @@ export class UsersService {
 
         return user;
     }
+
+    async findUserPosts(id: string): Promise<User | null> {
+        return this.usersRepository.findOne({
+            where: { id },
+            relations: ['posts'],
+        });
+    }
 }
