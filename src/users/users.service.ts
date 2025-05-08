@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindOperator, Repository } from 'typeorm';
 import { UserDto } from './dto/user.dto';
+import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User)
         private usersRepository: Repository<User>,
+        @InjectRepository(Subscription)
+        private subscriptionsRepository: Repository<Subscription>,
     ) { }
 
     findAll(): Promise<User[]> {
@@ -57,5 +60,19 @@ export class UsersService {
             where: { id },
             relations: ['posts'],
         });
+    }
+
+    async findSubscribers(id: string): Promise<User | null> {
+        const user = await this.usersRepository.findOneBy({ id });
+
+        /// ДОДЕЛАТЬ!!
+        return this.usersRepository.findOne({
+            where: { subscribers: { id } },
+            relations: ['subscribers'],
+        });
+
+        // return this.subscriptionsRepository.findOne({
+        //     where: { subscriber: { id: user?.id } }
+        // });
     }
 }

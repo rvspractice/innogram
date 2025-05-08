@@ -5,8 +5,9 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { Post } from './posts/entities/post.entity';
-import { Subscription } from './users/entities/subscription.entity';
+import { Subscription } from './subscriptions/entities/subscription.entity';
 import { PostsModule } from './posts/posts.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PostsModule } from './posts/posts.module';
     }),
     UsersModule,
     PostsModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,29 +8,29 @@ import { PostDto } from './dto/post.dto';
 export class PostsService {
     constructor(
         @InjectRepository(Post)
-        private usersRepository: Repository<Post>,
+        private postsRepository: Repository<Post>,
     ) { }
 
     findAllPosts(): Promise<Post[]> {
-        return this.usersRepository.find();
+        return this.postsRepository.find();
     }
 
     findPost(id: string): Promise<Post | null> {
-        return this.usersRepository.findOneBy({ id });
+        return this.postsRepository.findOneBy({ id });
     }
 
 
     async removePost(id: string): Promise<void> {
-        await this.usersRepository.delete(id);
+        await this.postsRepository.delete(id);
     }
 
     async createPost(createPostDto: PostDto): Promise<Post> {
-        const post = this.usersRepository.create({
+        const post = this.postsRepository.create({
             ...createPostDto,
             createdAt: new Date(),
         });
 
-        return this.usersRepository.save(post);
+        return this.postsRepository.save(post);
     }
 
     async updatePost(id: string, updatePostDto: PostDto): Promise<Post> {
@@ -40,7 +40,7 @@ export class PostsService {
             throw new Error(`Post with id ${id} not found`);
         }
 
-        await this.usersRepository.update(id, updatePostDto);
+        await this.postsRepository.update(id, updatePostDto);
 
         return post;
     }
