@@ -4,9 +4,10 @@ import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Subscription } from 'src/subscriptions/entities/subscription.entity';
+import { PostLike } from 'src/post-likes/entities/post-like.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Subscription])],
+  imports: [TypeOrmModule.forFeature([User, Subscription, PostLike])],
   controllers: [UsersController],
   providers: [UsersService]
 })

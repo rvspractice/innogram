@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Post } from '../../posts/entities/post.entity';
 import { Subscription } from '../../subscriptions/entities/subscription.entity';
+import { PostLike } from 'src/post-likes/entities/post-like.entity';
 
 @Entity({ name: 'user' })
 export class User {
@@ -45,4 +46,7 @@ export class User {
 
   @OneToMany(() => Subscription, subscription => subscription.targetUser)
   subscribers: Subscription[];
+
+  @OneToMany(() => PostLike, like => like.user)
+  likes: PostLike[];
 }

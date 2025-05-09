@@ -8,6 +8,8 @@ import { Post } from './posts/entities/post.entity';
 import { Subscription } from './subscriptions/entities/subscription.entity';
 import { PostsModule } from './posts/posts.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { PostLikesModule } from './post-likes/post-likes.module';
+import { PostLike } from './post-likes/entities/post-like.entity';
 
 @Module({
   imports: [
@@ -18,12 +20,13 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
       username: 'postgres',
       password: 'admin',
       database: 'postgres',
-      entities: [User, Post, Subscription],
+      entities: [User, Post, Subscription, PostLike],
       synchronize: true,
     }),
     UsersModule,
     PostsModule,
     SubscriptionsModule,
+    PostLikesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

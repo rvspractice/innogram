@@ -43,4 +43,13 @@ export class PostsController {
         return { message: 'Post deleted successfully' };
     }
 
+    @Get(':id/likes')
+    async getPostLikes(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            return await this.postsService.findPostLikes(id);
+        } catch (err) {
+            throw new NotFoundException('Likes not found');
+        }   
+    }
+
 }

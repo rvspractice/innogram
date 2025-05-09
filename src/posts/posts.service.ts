@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostDto } from './dto/post.dto';
+import { PostLike } from 'src/post-likes/entities/post-like.entity';
 
 @Injectable()
 export class PostsService {
     constructor(
         @InjectRepository(Post)
         private postsRepository: Repository<Post>,
+        @InjectRepository(PostLike)
+        private postLikesRepository: Repository<PostLike>,
     ) { }
 
     findAllPosts(): Promise<Post[]> {
@@ -43,6 +46,13 @@ export class PostsService {
         await this.postsRepository.update(id, updatePostDto);
 
         return post;
+    }
+
+    async findPostLikes(id: string): Promise<PostLike[] | null> {
+        return this.postLikesRepository.find({
+            where: { post: { id } },
+            relations: ['user'],
+        });
     }
 
 }

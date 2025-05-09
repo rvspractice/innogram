@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import { FindOperator, Repository } from 'typeorm';
 import { UserDto } from './dto/user.dto';
 import { Subscription } from 'src/subscriptions/entities/subscription.entity';
+import { PostLike } from 'src/post-likes/entities/post-like.entity';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,8 @@ export class UsersService {
         private usersRepository: Repository<User>,
         @InjectRepository(Subscription)
         private subscriptionsRepository: Repository<Subscription>,
+        @InjectRepository(PostLike)
+        private postLikesRepository: Repository<PostLike>,
     ) { }
 
     findAll(): Promise<User[]> {
@@ -64,7 +67,7 @@ export class UsersService {
 
     async findSubscribers(id: string): Promise<User[] | null> {
         const subscriptions = await this.subscriptionsRepository.find({
-            where: { targetUser: { id } },  
+            where: { targetUser: { id } },
             relations: ['subscriber'],
         });
 
@@ -73,11 +76,17 @@ export class UsersService {
 
     async findSubscriptions(id: string): Promise<User[] | null> {
         const subscriptions = await this.subscriptionsRepository.find({
-            where: { subscriber: { id } },  
+            where: { subscriber: { id } },
             relations: ['targetUser'],
         });
 
         return subscriptions.map((subscription) => subscription.targetUser);
+    }
 
+    async findPostLikes(id: string): Promise<PostLike[] | null> {
+        return this.postLikesRepository.find({
+            where: { user: { id } },
+            relations: ['post'],
+        });
     }
 }

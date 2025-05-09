@@ -72,6 +72,15 @@ export class UsersController {
             throw new NotFoundException('Subscriptions not found');
         }   
     }
+
+    @Get(':id/likes')
+    async getUserPostLikes(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            return await this.usersService.findPostLikes(id);
+        } catch (err) {
+            throw new NotFoundException('Likes not found');
+        }   
+    }
     
 
 }
