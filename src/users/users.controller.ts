@@ -63,6 +63,15 @@ export class UsersController {
             throw new NotFoundException('Subscribers not found');
         }   
     }
+
+    @Get(':id/subscriptions')
+    async getUserSubscriptions(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            return await this.usersService.findSubscriptions(id);
+        } catch (err) {
+            throw new NotFoundException('Subscriptions not found');
+        }   
+    }
     
 
 }

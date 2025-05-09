@@ -62,17 +62,22 @@ export class UsersService {
         });
     }
 
-    async findSubscribers(id: string): Promise<User | null> {
-        const user = await this.usersRepository.findOneBy({ id });
-
-        /// ДОДЕЛАТЬ!!
-        return this.usersRepository.findOne({
-            where: { subscribers: { id } },
-            relations: ['subscribers'],
+    async findSubscribers(id: string): Promise<User[] | null> {
+        const subscriptions = await this.subscriptionsRepository.find({
+            where: { targetUser: { id } },  
+            relations: ['subscriber'],
         });
 
-        // return this.subscriptionsRepository.findOne({
-        //     where: { subscriber: { id: user?.id } }
-        // });
+        return subscriptions.map((subscription) => subscription.subscriber);
+    }
+
+    async findSubscriptions(id: string): Promise<User[] | null> {
+        const subscriptions = await this.subscriptionsRepository.find({
+            where: { subscriber: { id } },  
+            relations: ['targetUser'],
+        });
+
+        return subscriptions.map((subscription) => subscription.targetUser);
+
     }
 }
