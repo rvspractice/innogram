@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { PostEntity } from 'src/posts/entities/post.entity';
 import { SubscriptionEntity } from 'src/subscriptions/entities/subscription.entity';
 import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
@@ -17,13 +17,13 @@ export class UserEntity {
   @Column()
   fullName: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   bio: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatarUrl: string;
 
   @Column()
@@ -35,8 +35,12 @@ export class UserEntity {
   @Column({ default: false })
   isBlocked: boolean;
 
-  @Column()
-  createdAt: Date;
+  @CreateDateColumn({
+    name: 'created_at',
+    type: "timestamptz",
+    default: () => "CURRENT_TIMESTAMP()",
+  })
+  created_at: Date;
 
   @OneToMany(() => PostEntity, post => post.author)
   posts: PostEntity[];

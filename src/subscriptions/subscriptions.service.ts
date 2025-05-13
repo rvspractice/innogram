@@ -44,7 +44,7 @@ export class SubscriptionsService {
         const subscription = new SubscriptionEntity();
         subscription.subscriber = subscriber;
         subscription.targetUser = targetUser;
-        subscription.createdAt = new Date();
+        subscription.created_at = new Date();
 
         return this.subscriptionsRepository.save(subscription);
     }
@@ -65,8 +65,13 @@ export class SubscriptionsService {
         if (!subscriber || !targetUser) {
             throw new NotFoundException('User not found');
         }
+        if (subscriberId === targetUserId) {
+            throw new BadRequestException('You can not subscribe to yourself');
+        }
 
-        await this.subscriptionsRepository.update(id, updateSubscriptionDto);
+        subscription.subscriber = subscriber;
+        subscription.targetUser = targetUser;
+        await this.subscriptionsRepository.update(id, subscription);
 
         return subscription;
     }

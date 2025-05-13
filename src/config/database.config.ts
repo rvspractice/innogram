@@ -14,6 +14,6 @@ export const databaseConfig: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [PostEntity, UserEntity, SubscriptionEntity, PostLikeEntity],
-  synchronize: false,
+  synchronize: true, // Set to false in production !!
   migrations: ['src/migrations/*.ts'],
 };

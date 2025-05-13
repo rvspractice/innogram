@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { PostEntity as PostEntity } from './entities/post.entity';
 import { PostsService } from './posts.service';
-import { PostDto } from './dto/post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -25,14 +26,14 @@ export class PostsController {
     }
     
     @Post()
-    async create(@Body() createPostDto: PostDto): Promise<PostEntity> {
+    async create(@Body() createPostDto: CreatePostDto): Promise<PostEntity> {
         return this.postsService.createPost(createPostDto);
     }
     
     @Put(':id')
     updatePost(
         @Param('id', ParseUUIDPipe) id: string,
-        @Body() updatePostDto: PostDto
+        @Body() updatePostDto: UpdatePostDto
     ) {
         return this.postsService.updatePost(id, updatePostDto);
     }

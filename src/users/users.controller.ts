@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -21,14 +22,14 @@ export class UsersController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async create(@Body() createUserDto: UserDto): Promise<UserEntity> {
+    async create(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
         return this.usersService.createUser(createUserDto);
     }
 
     @Put(':id')
     updateUser(
         @Param('id', ParseUUIDPipe) id: string,
-        @Body() updateUserDto: UserDto
+        @Body() updateUserDto: UpdateUserDto
     ) {
         return this.usersService.updateUser(id, updateUserDto);
     }

@@ -2,9 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { FindOperator, Repository } from 'typeorm';
-import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { SubscriptionEntity } from 'src/subscriptions/entities/subscription.entity';
 import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -34,10 +35,10 @@ export class UsersService {
         await this.usersRepository.delete(id);
     }
 
-    async createUser(createUserDto: UserDto): Promise<UserEntity> {
+    async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
         const user = this.usersRepository.create({
             ...createUserDto,
-            createdAt: new Date(),
+            created_at: new Date(),
             isVerified: createUserDto.isVerified ?? true,
             isBlocked: createUserDto.isBlocked ?? false,
             avatarUrl: createUserDto.avatarUrl ?? 'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-male-user-profile-vector-illustration-isolated-background-man-profile-sign-business-concept_157943-38764.jpg',
@@ -46,7 +47,7 @@ export class UsersService {
         return this.usersRepository.save(user);
     }
 
-    async updateUser(id: string, updateUserDto: UserDto): Promise<UserEntity> {
+    async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
         const user = await this.findUser(id);
 
         if (!user) {

@@ -46,7 +46,7 @@ export class PostLikesService {
         const postLike = new PostLikeEntity();
         postLike.user = creator;
         postLike.post = post;
-        postLike.createdAt = new Date();
+        postLike.created_at = new Date();
 
         return this.postLikesRepository.save(postLike);
     }
