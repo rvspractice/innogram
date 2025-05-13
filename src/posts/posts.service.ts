@@ -1,24 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Post } from './entities/post.entity';
+import { PostEntity } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostDto } from './dto/post.dto';
-import { PostLike } from 'src/post-likes/entities/post-like.entity';
+import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
 
 @Injectable()
 export class PostsService {
     constructor(
-        @InjectRepository(Post)
-        private postsRepository: Repository<Post>,
-        @InjectRepository(PostLike)
-        private postLikesRepository: Repository<PostLike>,
+        @InjectRepository(PostEntity)
+        private postsRepository: Repository<PostEntity>,
+        @InjectRepository(PostLikeEntity)
+        private postLikesRepository: Repository<PostLikeEntity>,
     ) { }
 
-    findAllPosts(): Promise<Post[]> {
+    findAllPosts(): Promise<PostEntity[]> {
         return this.postsRepository.find();
     }
 
-    findPost(id: string): Promise<Post | null> {
+    findPost(id: string): Promise<PostEntity | null> {
         return this.postsRepository.findOneBy({ id });
     }
 
@@ -27,7 +27,7 @@ export class PostsService {
         await this.postsRepository.delete(id);
     }
 
-    async createPost(createPostDto: PostDto): Promise<Post> {
+    async createPost(createPostDto: PostDto): Promise<PostEntity> {
         const post = this.postsRepository.create({
             ...createPostDto,
             createdAt: new Date(),
@@ -36,7 +36,7 @@ export class PostsService {
         return this.postsRepository.save(post);
     }
 
-    async updatePost(id: string, updatePostDto: PostDto): Promise<Post> {
+    async updatePost(id: string, updatePostDto: PostDto): Promise<PostEntity> {
         const post = await this.findPost(id);
 
         if (!post) {
@@ -48,7 +48,7 @@ export class PostsService {
         return post;
     }
 
-    async findPostLikes(id: string): Promise<PostLike[] | null> {
+    async findPostLikes(id: string): Promise<PostLikeEntity[] | null> {
         return this.postLikesRepository.find({
             where: { post: { id } },
             relations: ['user'],

@@ -1,25 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Subscription } from './entities/subscription.entity';
+import { SubscriptionEntity } from './entities/subscription.entity';
 import { Repository } from 'typeorm';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { User } from 'src/users/entities/user.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class SubscriptionsService {
     constructor(
-        @InjectRepository(Subscription)
-        private subscriptionsRepository: Repository<Subscription>,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
+        @InjectRepository(SubscriptionEntity)
+        private subscriptionsRepository: Repository<SubscriptionEntity>,
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>,
     ) { }
 
-    findAllSubscriptions(): Promise<Subscription[]> {
+    findAllSubscriptions(): Promise<SubscriptionEntity[]> {
         return this.subscriptionsRepository.find();
     }
 
-    findSubscription(id: string): Promise<Subscription | null> {
+    findSubscription(id: string): Promise<SubscriptionEntity | null> {
         return this.subscriptionsRepository.findOneBy({ id });
     }
 
@@ -27,19 +27,21 @@ export class SubscriptionsService {
         await this.subscriptionsRepository.delete(id);
     }
 
-    async createSubscription(createSubscriptionDto: CreateSubscriptionDto): Promise<Subscription> {
+    async createSubscription(createSubscriptionDto: CreateSubscriptionDto): Promise<SubscriptionEntity> {
         if (createSubscriptionDto.subscriberId === createSubscriptionDto.targetUserId) {
-            throw new Error('You can not subscribe to yourself');
+            throw new BadRequestException('You can not subscribe to yourself');
         }
 
-        const subscriber = await this.userRepository.findOneBy({ id: createSubscriptionDto.subscriberId });
-        const targetUser = await this.userRepository.findOneBy({ id: createSubscriptionDto.targetUserId });
+        const [subscriber, targetUser] = await Promise.all([
+            this.userRepository.findOneBy({ id: createSubscriptionDto.subscriberId }),
+            this.userRepository.findOneBy({ id: createSubscriptionDto.targetUserId }),
+        ]);
 
         if (!subscriber || !targetUser) {
             throw new NotFoundException('User not found');
         }
 
-        const subscription = new Subscription();
+        const subscription = new SubscriptionEntity();
         subscription.subscriber = subscriber;
         subscription.targetUser = targetUser;
         subscription.createdAt = new Date();
@@ -47,7 +49,7 @@ export class SubscriptionsService {
         return this.subscriptionsRepository.save(subscription);
     }
 
-    async updateSubscription(id: string, updateSubscriptionDto: UpdateSubscriptionDto): Promise<Subscription> {
+    async updateSubscription(id: string, updateSubscriptionDto: UpdateSubscriptionDto): Promise<SubscriptionEntity> {
         const subscription = await this.findSubscription(id);
 
         if (!subscription) {
@@ -55,8 +57,10 @@ export class SubscriptionsService {
         }
 
         const { subscriberId, targetUserId } = updateSubscriptionDto;
-        const subscriber = await this.userRepository.findOneBy({ id: subscriberId });
-        const targetUser = await this.userRepository.findOneBy({ id: targetUserId });
+        const [subscriber, targetUser] = await Promise.all([
+            this.userRepository.findOneBy({ id: subscriberId }),
+            this.userRepository.findOneBy({ id: targetUserId }),
+        ]);
 
         if (!subscriber || !targetUser) {
             throw new NotFoundException('User not found');

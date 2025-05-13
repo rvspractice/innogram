@@ -1,10 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Post } from '../../posts/entities/post.entity';
-import { Subscription } from '../../subscriptions/entities/subscription.entity';
-import { PostLike } from 'src/post-likes/entities/post-like.entity';
+import { PostEntity } from 'src/posts/entities/post.entity';
+import { SubscriptionEntity } from 'src/subscriptions/entities/subscription.entity';
+import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
 
 @Entity({ name: 'user' })
-export class User {
+export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -38,15 +38,15 @@ export class User {
   @Column()
   createdAt: Date;
 
-  @OneToMany(() => Post, post => post.author)
-  posts: Post[];
+  @OneToMany(() => PostEntity, post => post.author)
+  posts: PostEntity[];
 
-  @OneToMany(() => Subscription, subscription => subscription.subscriber)
-  subscriptions: Subscription[];
+  @OneToMany(() => SubscriptionEntity, subscription => subscription.subscriber)
+  subscriptions: SubscriptionEntity[];
 
-  @OneToMany(() => Subscription, subscription => subscription.targetUser)
-  subscribers: Subscription[];
+  @OneToMany(() => SubscriptionEntity, subscription => subscription.targetUser)
+  subscribers: SubscriptionEntity[];
 
-  @OneToMany(() => PostLike, like => like.user)
-  likes: PostLike[];
+  @OneToMany(() => PostLikeEntity, like => like.user)
+  likes: PostLikeEntity[];
 }

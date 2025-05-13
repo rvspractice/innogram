@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
-import { Post as PostEntity } from './entities/post.entity';
+import { PostEntity as PostEntity } from './entities/post.entity';
 import { PostsService } from './posts.service';
 import { PostDto } from './dto/post.dto';
 

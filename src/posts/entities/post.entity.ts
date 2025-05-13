@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { PostLike } from 'src/post-likes/entities/post-like.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
+import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
 
-@Entity()
-export class Post {
+@Entity({ name: 'post' })
+export class PostEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -21,10 +21,10 @@ export class Post {
   @Column()
   createdAt: Date;
 
-  @ManyToOne(() => User, user => user.posts)
+  @ManyToOne(() => UserEntity, user => user.posts)
   @JoinColumn({ name: 'author_id' })
-  author: User;
+  author: UserEntity;
 
-  @OneToMany(() => PostLike, like => like.post)
-  likes: PostLike[];
+  @OneToMany(() => PostLikeEntity, like => like.post)
+  likes: PostLikeEntity[];
 }
