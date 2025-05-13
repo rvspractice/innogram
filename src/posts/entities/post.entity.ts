@@ -9,6 +9,8 @@ export class Post {
 
   @Column()
   caption: string;
+  // ????
+  //  title: string; // Renamed from caption to title - migration testing
 
   @Column()
   content: string;
