@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { FindOperator, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { SubscriptionEntity } from 'src/subscriptions/entities/subscription.entity';
-import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { SubscriptionEntity } from '../subscriptions/entities/subscription.entity';
+import { PostLikeEntity } from '../post-likes/entities/post-like.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PostCommentEntity } from '../post-comments/entities/post-comment.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,8 @@ export class UsersService {
         private subscriptionsRepository: Repository<SubscriptionEntity>,
         @InjectRepository(PostLikeEntity)
         private postLikesRepository: Repository<PostLikeEntity>,
+        @InjectRepository(PostCommentEntity)
+        private postCommentsRepository: Repository<PostCommentEntity>,
     ) { }
 
     findAll(): Promise<UserEntity[]> {
@@ -86,6 +89,13 @@ export class UsersService {
 
     async findPostLikes(id: string): Promise<PostLikeEntity[] | null> {
         return this.postLikesRepository.find({
+            where: { user: { id } },
+            relations: ['post'],
+        });
+    }
+
+    async findPostComments(id: string): Promise<PostCommentEntity[]> {
+        return this.postCommentsRepository.find({
             where: { user: { id } },
             relations: ['post'],
         });

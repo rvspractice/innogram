@@ -76,6 +76,15 @@ export class UsersController {
             throw new NotFoundException('Likes not found');
         }   
     }
+
+    @Get(':id/comments')
+    async getUserPostComments(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            return await this.usersService.findPostComments(id);
+        } catch (err) {
+            throw new NotFoundException('Comments not found');
+        }   
+    }
     
 
 }

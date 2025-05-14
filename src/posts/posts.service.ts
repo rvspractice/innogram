@@ -3,8 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { PostLikeEntity } from '../post-likes/entities/post-like.entity';
 import { CreatePostDto } from './dto/create-post.dto';
+import { PostCommentEntity } from '../post-comments/entities/post-comment.entity';
+import { PaginationDto } from 'src/shared/pagination.dto';
 
 @Injectable()
 export class PostsService {
@@ -13,10 +15,22 @@ export class PostsService {
         private postsRepository: Repository<PostEntity>,
         @InjectRepository(PostLikeEntity)
         private postLikesRepository: Repository<PostLikeEntity>,
+        @InjectRepository(PostCommentEntity)
+        private postCommentsRepository: Repository<PostCommentEntity>,
     ) { }
 
-    findAllPosts(): Promise<PostEntity[]> {
-        return this.postsRepository.find();
+    async findAllPosts(paginationDto: PaginationDto): Promise<{ data: PostEntity[]; count: number }> {
+        const { limit = 10, offset = 0 } = paginationDto;
+
+        const [products, total] = await this.postsRepository.findAndCount({
+            take: limit,
+            skip: offset,
+        });
+
+        return {
+            data: products,
+            count: total,
+        };
     }
 
     findPost(id: string): Promise<PostEntity | null> {
@@ -51,6 +65,13 @@ export class PostsService {
 
     async findPostLikes(id: string): Promise<PostLikeEntity[] | null> {
         return this.postLikesRepository.find({
+            where: { post: { id } },
+            relations: ['user'],
+        });
+    }
+
+    async findPostComments(id: string): Promise<PostCommentEntity[]> {
+        return this.postCommentsRepository.find({
             where: { post: { id } },
             relations: ['user'],
         });

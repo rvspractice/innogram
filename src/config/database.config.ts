@@ -1,10 +1,7 @@
 import 'dotenv/config'; // load .env variables
+import * as path from 'path';
 
 import { DataSourceOptions } from "typeorm";
-import { PostEntity } from "../posts/entities/post.entity";
-import { UserEntity } from "../users/entities/user.entity";
-import { SubscriptionEntity } from "../subscriptions/entities/subscription.entity";
-import { PostLikeEntity } from "../post-likes/entities/post-like.entity";
 
 export const databaseConfig: DataSourceOptions = {
   type: 'postgres',
@@ -13,7 +10,7 @@ export const databaseConfig: DataSourceOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [PostEntity, UserEntity, SubscriptionEntity, PostLikeEntity],
+  entities: [path.join(__dirname, '../**/*.entity.ts')], //autoload entities
   synchronize: true, // Set to false in production !!
-  migrations: ['src/migrations/*.ts'],
+//  migrations: [path.join(__dirname, '../migrations/*.ts')],
 };

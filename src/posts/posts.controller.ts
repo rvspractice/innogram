@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { PostEntity as PostEntity } from './entities/post.entity';
 import { PostsService } from './posts.service';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreatePostDto } from './dto/create-post.dto';
+import { PaginationDto } from 'src/shared/pagination.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -12,8 +13,8 @@ export class PostsController {
     
 
     @Get()
-    getAllPosts() {
-        return this.postsService.findAllPosts();
+    getAllPosts(@Query() paginationDto: PaginationDto) {
+        return this.postsService.findAllPosts(paginationDto);
     }
 
     @Get(':id')
@@ -51,6 +52,15 @@ export class PostsController {
         } catch (err) {
             throw new NotFoundException('Likes not found');
         }   
+    }
+
+    @Get(':id/comments')
+    async getPostComments(@Param('id', ParseUUIDPipe) id: string) {
+        try {
+            return await this.postsService.findPostComments(id);
+        } catch (err) {
+            throw new NotFoundException('Comments not found');
+        }
     }
 
 }

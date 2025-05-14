@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
-import { PostEntity } from 'src/posts/entities/post.entity';
-import { SubscriptionEntity } from 'src/subscriptions/entities/subscription.entity';
-import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { PostEntity } from '../../posts/entities/post.entity';
+import { SubscriptionEntity } from '../../subscriptions/entities/subscription.entity';
+import { PostLikeEntity } from '../../post-likes/entities/post-like.entity';
+import { PostCommentEntity } from '../../post-comments/entities/post-comment.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -53,4 +54,7 @@ export class UserEntity {
 
   @OneToMany(() => PostLikeEntity, like => like.user)
   likes: PostLikeEntity[];
+
+  @OneToMany(() => PostCommentEntity, comment => comment.user)
+  comments: PostCommentEntity[];
 }

@@ -4,7 +4,7 @@ import { SubscriptionEntity } from './entities/subscription.entity';
 import { Repository } from 'typeorm';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Injectable()
 export class SubscriptionsService {

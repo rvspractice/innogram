@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from 'typeorm';
-import { UserEntity } from 'src/users/entities/user.entity';
-import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { UserEntity } from '../../users/entities/user.entity';
+import { PostLikeEntity } from '../../post-likes/entities/post-like.entity';
+import { PostCommentEntity } from '../../post-comments/entities/post-comment.entity';
 
 @Entity({ name: 'post' })
 export class PostEntity {
@@ -8,9 +9,7 @@ export class PostEntity {
   id: string;
 
   @Column()
-  caption: string;
-  // ????
-  //  title: string; // Renamed from caption to title - migration testing
+  title: string; // Renamed from caption to title - migration testing
 
   @Column()
   content: string;
@@ -31,4 +30,7 @@ export class PostEntity {
 
   @OneToMany(() => PostLikeEntity, like => like.post)
   likes: PostLikeEntity[];
+
+  @OneToMany(() => PostCommentEntity, comment => comment.post)
+  comments: PostCommentEntity[];
 }
