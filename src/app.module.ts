@@ -13,7 +13,10 @@ import { PostCommentsModule } from './post-comments/post-comments.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }), // load .env variables
-    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule.forRoot({
+      ...databaseConfig,
+      autoLoadEntities: true,
+    }),
     UsersModule,
     PostsModule,
     SubscriptionsModule,

@@ -10,7 +10,6 @@ export const databaseConfig: DataSourceOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [path.join(__dirname, '../**/*.entity.ts')], //autoload entities
   synchronize: true, // Set to false in production !!
-//  migrations: [path.join(__dirname, '../migrations/*.ts')],
+  migrations: [path.join(__dirname, '../migrations/*.ts')],
 };
