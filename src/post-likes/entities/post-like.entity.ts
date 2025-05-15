@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, 
 import { PostEntity } from 'src/posts/entities/post.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 
-@Entity({ name: 'post-like' })
+@Entity({ name: 'post_like' })
 @Unique(['user', 'post'])
 export class PostLikeEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -11,13 +11,24 @@ export class PostLikeEntity {
   @CreateDateColumn({
     name: 'created_at',
     type: "timestamptz",
-    default: () => "CURRENT_TIMESTAMP()",
   })
-  created_at: Date;
+  createdAt: Date;
+
+  @Column({
+    name: 'user_id',
+    type: 'uuid'
+  })
+  userId: string;
 
   @ManyToOne(() => UserEntity, user => user.likes)
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
+
+  @Column({
+    name: 'post_id',
+    type: 'uuid'
+  })
+  postId: string;
 
   @ManyToOne(() => PostEntity, (post) => post.likes)
   @JoinColumn({ name: 'post_id' })

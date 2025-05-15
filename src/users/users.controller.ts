@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -35,46 +35,29 @@ export class UsersController {
     }
 
     @Delete(':id')
-    async remove(@Param('id', ParseUUIDPipe) id: string): Promise<{ message: string }> {
-        await this.usersService.removeUser(id);
-        return { message: 'User deleted successfully' };
+    async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+        return await this.usersService.removeUser(id);
     }
 
 
     @Get(':id/posts')
     async getPostsByUserId(@Param('id', ParseUUIDPipe) id: string) { 
-        try {
-            return await this.usersService.findUserPosts(id);
-        } catch (err) {
-            throw new NotFoundException('User not found');
-        }
+        return await this.usersService.findUserPosts(id);
     }
 
     @Get(':id/subscribers')
     async getUserSubscribers(@Param('id', ParseUUIDPipe) id: string) {
-        try {
-            return await this.usersService.findSubscribers(id);
-        } catch (err) {
-            throw new NotFoundException('Subscribers not found');
-        }   
+        return await this.usersService.findSubscribers(id);
     }
 
     @Get(':id/subscriptions')
     async getUserSubscriptions(@Param('id', ParseUUIDPipe) id: string) {
-        try {
-            return await this.usersService.findSubscriptions(id);
-        } catch (err) {
-            throw new NotFoundException('Subscriptions not found');
-        }   
+        return await this.usersService.findSubscriptions(id);  
     }
 
     @Get(':id/likes')
     async getUserPostLikes(@Param('id', ParseUUIDPipe) id: string) {
-        try {
-            return await this.usersService.findPostLikes(id);
-        } catch (err) {
-            throw new NotFoundException('Likes not found');
-        }   
+        return await this.usersService.findPostLikes(id);  
     }
     
 

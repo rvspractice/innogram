@@ -9,13 +9,24 @@ export class SubscriptionEntity {
   @CreateDateColumn({
     name: 'created_at',
     type: "timestamptz",
-    default: () => "CURRENT_TIMESTAMP()",
   })
-  created_at: Date;
+  createdAt: Date;
+
+  @Column({
+    name: 'subscriber_id',
+    type: 'uuid'
+  })
+  subscriberId: string;
 
   @ManyToOne(() => UserEntity, user => user.subscriptions)
   @JoinColumn({ name: 'subscriber_id' })
   subscriber: UserEntity;
+
+  @Column({
+    name: 'target_user_id',
+    type: 'uuid'
+  })
+  targetUserId: string;
 
   @ManyToOne(() => UserEntity, user => user.subscribers)
   @JoinColumn({ name: 'target_user_id' })

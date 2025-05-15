@@ -38,7 +38,7 @@ export class UsersService {
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
         const user = this.usersRepository.create({
             ...createUserDto,
-            created_at: new Date(),
+            createdAt: new Date(),
             isVerified: createUserDto.isVerified ?? true,
             isBlocked: createUserDto.isBlocked ?? false,
             avatarUrl: createUserDto.avatarUrl ?? 'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-male-user-profile-vector-illustration-isolated-background-man-profile-sign-business-concept_157943-38764.jpg',
@@ -59,11 +59,17 @@ export class UsersService {
         return user;
     }
 
-    async findUserPosts(id: string): Promise<UserEntity | null> {
-        return this.usersRepository.findOne({
+    async findUserPosts(id: string): Promise<UserEntity> {
+        const user = await this.usersRepository.findOne({
             where: { id },
             relations: ['posts'],
         });
+
+        if (!user) {
+            throw new NotFoundException(`User with ID "${id}" not found`);
+        }
+
+        return user;
     }
 
     async findSubscribers(id: string): Promise<UserEntity[] | null> {
@@ -71,6 +77,10 @@ export class UsersService {
             where: { targetUser: { id } },
             relations: ['subscriber'],
         });
+
+        if (!subscriptions) {
+            throw new NotFoundException(`Subscriptions with ID "${id}" not found`);
+        }
 
         return subscriptions.map((subscription) => subscription.subscriber);
     }
@@ -81,13 +91,23 @@ export class UsersService {
             relations: ['targetUser'],
         });
 
+        if (!subscriptions) {
+            throw new NotFoundException(`Subscriptions with ID "${id}" not found`);
+        }
+
         return subscriptions.map((subscription) => subscription.targetUser);
     }
 
     async findPostLikes(id: string): Promise<PostLikeEntity[] | null> {
-        return this.postLikesRepository.find({
+        const postLike = await this.postLikesRepository.find({
             where: { user: { id } },
             relations: ['post'],
         });
+
+        if (!postLike) {
+            throw new NotFoundException(`Like with ID "${id}" not found`);
+        }
+
+        return postLike;
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from './entities/post.entity';
 import { Repository } from 'typeorm';
@@ -16,11 +16,17 @@ export class PostsService {
     ) { }
 
     findAllPosts(): Promise<PostEntity[]> {
-        return this.postsRepository.find();
+        return this.postsRepository.find({ relations: ['author'] });
     }
 
-    findPost(id: string): Promise<PostEntity | null> {
-        return this.postsRepository.findOneBy({ id });
+    async findPost(id: string): Promise<PostEntity> {
+        const post = await this.postsRepository.findOneBy({ id });
+
+        if (!post) {
+            throw new NotFoundException(`Post with ID "${id}" not found`);
+        }
+
+        return post;
     }
 
 
@@ -31,7 +37,7 @@ export class PostsService {
     async createPost(createPostDto: CreatePostDto): Promise<PostEntity> {
         const post = this.postsRepository.create({
             ...createPostDto,
-            created_at: new Date(),
+            createdAt: new Date(),
         });
 
         return this.postsRepository.save(post);
@@ -49,11 +55,17 @@ export class PostsService {
         return post;
     }
 
-    async findPostLikes(id: string): Promise<PostLikeEntity[] | null> {
-        return this.postLikesRepository.find({
+    async findPostLikes(id: string): Promise<PostLikeEntity[]> {
+        const postLike = await this.postLikesRepository.find({
             where: { post: { id } },
             relations: ['user'],
         });
+
+        if (!postLike) {
+            throw new NotFoundException(`Like with ID "${id}" not found`);
+        }
+
+        return postLike;
     }
 
 }

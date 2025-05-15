@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from 'typeorm';
-import { UserEntity } from 'src/users/entities/user.entity';
-import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { UserEntity } from '../../users/entities/user.entity';
+import { PostLikeEntity } from '../../post-likes/entities/post-like.entity';
 
 @Entity({ name: 'post' })
 export class PostEntity {
@@ -8,9 +8,7 @@ export class PostEntity {
   id: string;
 
   @Column()
-  caption: string;
-  // ????
-  //  title: string; // Renamed from caption to title - migration testing
+  title: string; // Renamed from caption to title - migration testing
 
   @Column()
   content: string;
@@ -21,9 +19,14 @@ export class PostEntity {
   @CreateDateColumn({
     name: 'created_at',
     type: "timestamptz",
-    default: () => "CURRENT_TIMESTAMP()",
   })
-  created_at: Date;
+  createdAt: Date;
+
+  @Column({
+    name: 'author_id',
+    type: 'uuid'
+  })
+  authorId: string;
 
   @ManyToOne(() => UserEntity, user => user.posts)
   @JoinColumn({ name: 'author_id' })
