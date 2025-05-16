@@ -18,7 +18,7 @@ export class PostsController {
 
     @Get(':id')
     async getById(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.postsService.findPost(id);
+        return await this.postsService.findPostById(id);
     }
     
     @Post()

@@ -1,19 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, CreateDateColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { PostEntity } from 'src/posts/entities/post.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { BaseEntity } from 'src/shared/base.entity';
 
 @Entity({ name: 'post_like' })
 @Unique(['user', 'post'])
-export class PostLikeEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: "timestamptz",
-  })
-  createdAt: Date;
-
+export class PostLikeEntity extends BaseEntity {
   @Column({
     name: 'user_id',
     type: 'uuid'

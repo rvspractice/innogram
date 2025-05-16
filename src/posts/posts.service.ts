@@ -19,7 +19,7 @@ export class PostsService {
         return this.postsRepository.find({ relations: ['author'] });
     }
 
-    async findPost(id: string): Promise<PostEntity> {
+    async findPostById(id: string): Promise<PostEntity> {
         const post = await this.postsRepository.findOneBy({ id });
 
         if (!post) {
@@ -37,14 +37,13 @@ export class PostsService {
     async createPost(createPostDto: CreatePostDto): Promise<PostEntity> {
         const post = this.postsRepository.create({
             ...createPostDto,
-            createdAt: new Date(),
         });
 
         return this.postsRepository.save(post);
     }
 
     async updatePost(id: string, updatePostDto: UpdatePostDto): Promise<PostEntity> {
-        const post = await this.findPost(id);
+        const post = await this.findPostById(id);
 
         if (!post) {
             throw new Error(`Post with id ${id} not found`);
@@ -52,7 +51,9 @@ export class PostsService {
 
         await this.postsRepository.update(id, updatePostDto);
 
-        return post;
+        const updatedPost = await this.findPostById(id);
+
+        return updatedPost;
     }
 
     async findPostLikes(id: string): Promise<PostLikeEntity[]> {

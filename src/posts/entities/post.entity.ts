@@ -1,12 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 import { PostLikeEntity } from '../../post-likes/entities/post-like.entity';
+import { BaseEntity } from 'src/shared/base.entity';
 
 @Entity({ name: 'post' })
-export class PostEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class PostEntity extends BaseEntity {
   @Column()
   title: string; // Renamed from caption to title - migration testing
 
@@ -15,12 +13,6 @@ export class PostEntity {
 
   @Column()
   imageUrl: string;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: "timestamptz",
-  })
-  createdAt: Date;
 
   @Column({
     name: 'author_id',

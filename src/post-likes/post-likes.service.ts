@@ -17,10 +17,6 @@ export class PostLikesService {
         private postsRepository: Repository<PostEntity>,
     ) { }
 
-    async findAllPostLikes(): Promise<PostLikeEntity[]> {
-        return this.postLikesRepository.find();
-    }
-
     async findPostLike(id: string): Promise<PostLikeEntity> {
         const postLike = await this.postLikesRepository.findOne({ where: { id } });
 
@@ -52,7 +48,6 @@ export class PostLikesService {
         const postLike = new PostLikeEntity();
         postLike.user = creator;
         postLike.post = post;
-        postLike.createdAt = new Date();
 
         return this.postLikesRepository.save(postLike);
     }

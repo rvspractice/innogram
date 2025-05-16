@@ -1,13 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { PostEntity } from 'src/posts/entities/post.entity';
 import { SubscriptionEntity } from 'src/subscriptions/entities/subscription.entity';
 import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { BaseEntity } from 'src/shared/base.entity';
 
 @Entity({ name: 'user' })
-export class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class UserEntity extends BaseEntity {
   @Column()
   email: string;
 
@@ -34,12 +32,6 @@ export class UserEntity {
 
   @Column({ default: false })
   isBlocked: boolean;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: "timestamptz",
-  })
-  createdAt: Date;
 
   @OneToMany(() => PostEntity, post => post.author)
   posts: PostEntity[];

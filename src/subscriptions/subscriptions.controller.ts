@@ -15,7 +15,7 @@ export class SubscriptionsController {
     }
     @Get(':id') 
     async getById(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.subscriptionsService.findSubscription(id);
+        return await this.subscriptionsService.findSubscriptionBtId(id);
     }
 
     @Post()

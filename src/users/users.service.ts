@@ -22,12 +22,13 @@ export class UsersService {
         return this.usersRepository.find();
     }
 
-    async findUser(id: string | FindOperator<string> | undefined): Promise<UserEntity | null> {
-        const user = this.usersRepository.findOneBy({ id });
+    async findUserById(id: string): Promise<UserEntity> {
+        const user = await this.usersRepository.findOneBy({ id });
 
         if (!user) {
             throw new NotFoundException(`User with id ${id} not found`);
         }
+        
         return user;
     }
 
@@ -38,7 +39,6 @@ export class UsersService {
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
         const user = this.usersRepository.create({
             ...createUserDto,
-            createdAt: new Date(),
             isVerified: createUserDto.isVerified ?? true,
             isBlocked: createUserDto.isBlocked ?? false,
             avatarUrl: createUserDto.avatarUrl ?? 'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-male-user-profile-vector-illustration-isolated-background-man-profile-sign-business-concept_157943-38764.jpg',
@@ -48,7 +48,7 @@ export class UsersService {
     }
 
     async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-        const user = await this.findUser(id);
+        const user = await this.findUserById(id);
 
         if (!user) {
             throw new NotFoundException(`User with id ${id} not found`);
@@ -56,7 +56,9 @@ export class UsersService {
 
         await this.usersRepository.update(id, updateUserDto);
 
-        return user;
+        const updatedUser = await this.findUserById(id);
+
+        return updatedUser;
     }
 
     async findUserPosts(id: string): Promise<UserEntity> {
@@ -72,7 +74,7 @@ export class UsersService {
         return user;
     }
 
-    async findSubscribers(id: string): Promise<UserEntity[] | null> {
+    async findSubscribers(id: string): Promise<UserEntity[]> {
         const subscriptions = await this.subscriptionsRepository.find({
             where: { targetUser: { id } },
             relations: ['subscriber'],
@@ -85,7 +87,7 @@ export class UsersService {
         return subscriptions.map((subscription) => subscription.subscriber);
     }
 
-    async findSubscriptions(id: string): Promise<UserEntity[] | null> {
+    async findSubscriptions(id: string): Promise<UserEntity[]> {
         const subscriptions = await this.subscriptionsRepository.find({
             where: { subscriber: { id } },
             relations: ['targetUser'],
@@ -98,7 +100,7 @@ export class UsersService {
         return subscriptions.map((subscription) => subscription.targetUser);
     }
 
-    async findPostLikes(id: string): Promise<PostLikeEntity[] | null> {
+    async findPostLikes(id: string): Promise<PostLikeEntity[]> {
         const postLike = await this.postLikesRepository.find({
             where: { user: { id } },
             relations: ['post'],

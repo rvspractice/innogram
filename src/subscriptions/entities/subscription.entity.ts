@@ -1,17 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { BaseEntity } from 'src/shared/base.entity';
 
 @Entity({ name: 'subscription' })
-export class SubscriptionEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    type: "timestamptz",
-  })
-  createdAt: Date;
-
+export class SubscriptionEntity extends BaseEntity {
   @Column({
     name: 'subscriber_id',
     type: 'uuid'
