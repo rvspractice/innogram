@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from './entities/post.entity';
 import { Repository } from 'typeorm';
@@ -33,8 +33,14 @@ export class PostsService {
         };
     }
 
-    findPost(id: string): Promise<PostEntity | null> {
-        return this.postsRepository.findOneBy({ id });
+    async findPostById(id: string): Promise<PostEntity> {
+        const post = await this.postsRepository.findOneBy({ id });
+
+        if (!post) {
+            throw new NotFoundException(`Post with ID "${id}" not found`);
+        }
+
+        return post;
     }
 
 
@@ -45,14 +51,13 @@ export class PostsService {
     async createPost(createPostDto: CreatePostDto): Promise<PostEntity> {
         const post = this.postsRepository.create({
             ...createPostDto,
-            created_at: new Date(),
         });
 
         return this.postsRepository.save(post);
     }
 
     async updatePost(id: string, updatePostDto: UpdatePostDto): Promise<PostEntity> {
-        const post = await this.findPost(id);
+        const post = await this.findPostById(id);
 
         if (!post) {
             throw new Error(`Post with id ${id} not found`);
@@ -60,21 +65,35 @@ export class PostsService {
 
         await this.postsRepository.update(id, updatePostDto);
 
-        return post;
+        const updatedPost = await this.findPostById(id);
+
+        return updatedPost;
     }
 
-    async findPostLikes(id: string): Promise<PostLikeEntity[] | null> {
-        return this.postLikesRepository.find({
+    async findPostLikes(id: string): Promise<PostLikeEntity[]> {
+        const postLike = await this.postLikesRepository.find({
             where: { post: { id } },
             relations: ['user'],
         });
+
+        if (!postLike) {
+            throw new NotFoundException(`Like with ID "${id}" not found`);
+        }
+
+        return postLike;
     }
 
     async findPostComments(id: string): Promise<PostCommentEntity[]> {
-        return this.postCommentsRepository.find({
+        const postLike = this.postCommentsRepository.find({
             where: { post: { id } },
             relations: ['user'],
         });
+
+        if (!postLike) {
+            throw new NotFoundException(`Like with ID "${id}" not found`);
+        }
+
+        return postLike;
     }
 
 }

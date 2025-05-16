@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { PostEntity as PostEntity } from './entities/post.entity';
 import { PostsService } from './posts.service';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -19,11 +19,7 @@ export class PostsController {
 
     @Get(':id')
     async getById(@Param('id', ParseUUIDPipe) id: string) {
-        try {
-            return await this.postsService.findPost(id);
-        } catch (err) {
-            throw new NotFoundException('Post not found');
-        }
+        return await this.postsService.findPostById(id);
     }
     
     @Post()
@@ -40,27 +36,18 @@ export class PostsController {
     }
     
     @Delete(':id')
-    async remove(@Param('id', ParseUUIDPipe) id: string): Promise<{ message: string }> {
-        await this.postsService.removePost(id);
-        return { message: 'Post deleted successfully' };
+    async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+        return await this.postsService.removePost(id);
     }
 
     @Get(':id/likes')
     async getPostLikes(@Param('id', ParseUUIDPipe) id: string) {
-        try {
-            return await this.postsService.findPostLikes(id);
-        } catch (err) {
-            throw new NotFoundException('Likes not found');
-        }   
+        return await this.postsService.findPostLikes(id); 
     }
 
     @Get(':id/comments')
     async getPostComments(@Param('id', ParseUUIDPipe) id: string) {
-        try {
-            return await this.postsService.findPostComments(id);
-        } catch (err) {
-            throw new NotFoundException('Comments not found');
-        }
+        return await this.postsService.findPostComments(id);
     }
 
 }

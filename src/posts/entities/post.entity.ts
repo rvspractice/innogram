@@ -1,13 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 import { PostLikeEntity } from '../../post-likes/entities/post-like.entity';
-import { PostCommentEntity } from '../../post-comments/entities/post-comment.entity';
+import { BaseEntity } from 'src/shared/base.entity';
+import { PostCommentEntity } from 'src/post-comments/entities/post-comment.entity';
 
 @Entity({ name: 'post' })
-export class PostEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class PostEntity extends BaseEntity {
   @Column()
   title: string; // Renamed from caption to title - migration testing
 
@@ -17,12 +15,11 @@ export class PostEntity {
   @Column()
   imageUrl: string;
 
-  @CreateDateColumn({
-    name: 'created_at',
-    type: "timestamptz",
-    default: () => "CURRENT_TIMESTAMP()",
+  @Column({
+    name: 'author_id',
+    type: 'uuid'
   })
-  created_at: Date;
+  authorId: string;
 
   @ManyToOne(() => UserEntity, user => user.posts)
   @JoinColumn({ name: 'author_id' })

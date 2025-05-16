@@ -17,12 +17,14 @@ export class PostLikesService {
         private postsRepository: Repository<PostEntity>,
     ) { }
 
-    async findAllPostLikes(): Promise<PostLikeEntity[]> {
-        return this.postLikesRepository.find({ relations: ['user', 'post'] });
-    }
+    async findPostLike(id: string): Promise<PostLikeEntity> {
+        const postLike = await this.postLikesRepository.findOne({ where: { id } });
 
-    async findPostLike(id: string): Promise<PostLikeEntity | null> {
-        return this.postLikesRepository.findOne({ where: { id }, relations: ['user', 'post'] });
+        if (!postLike) {
+            throw new NotFoundException(`Like with ID "${id}" not found`);
+        }
+
+        return postLike;
     }
 
     async removePostLike(id: string): Promise<void> {
@@ -46,7 +48,6 @@ export class PostLikesService {
         const postLike = new PostLikeEntity();
         postLike.user = creator;
         postLike.post = post;
-        postLike.created_at = new Date();
 
         return this.postLikesRepository.save(postLike);
     }

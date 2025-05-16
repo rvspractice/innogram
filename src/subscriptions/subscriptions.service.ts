@@ -19,8 +19,14 @@ export class SubscriptionsService {
         return this.subscriptionsRepository.find();
     }
 
-    findSubscription(id: string): Promise<SubscriptionEntity | null> {
-        return this.subscriptionsRepository.findOneBy({ id });
+    async findSubscriptionBtId(id: string): Promise<SubscriptionEntity> {
+        const subscription = await this.subscriptionsRepository.findOneBy({ id });
+
+        if (!subscription) {
+            throw new NotFoundException(`Subscription with ID "${id}" not found`);
+        }
+
+        return subscription;
     }
 
     async removeSubscription(id: string): Promise<void> {
@@ -44,13 +50,12 @@ export class SubscriptionsService {
         const subscription = new SubscriptionEntity();
         subscription.subscriber = subscriber;
         subscription.targetUser = targetUser;
-        subscription.created_at = new Date();
 
         return this.subscriptionsRepository.save(subscription);
     }
 
     async updateSubscription(id: string, updateSubscriptionDto: UpdateSubscriptionDto): Promise<SubscriptionEntity> {
-        const subscription = await this.findSubscription(id);
+        const subscription = await this.findSubscriptionBtId(id);
 
         if (!subscription) {
             throw new Error(`Subscription with id ${id} not found`);
@@ -73,7 +78,9 @@ export class SubscriptionsService {
         subscription.targetUser = targetUser;
         await this.subscriptionsRepository.update(id, subscription);
 
-        return subscription;
+        const updatedSubscription = await this.findSubscriptionBtId(id);
+
+        return updatedSubscription;
     }
 
 }
