@@ -15,11 +15,7 @@ export class PostCommentsController {
 
     @Get(':id')
     async getPostComment(@Param('id', ParseUUIDPipe) id: string) {
-        try {
-            return await this.postCommentsService.findPostComment(id);
-        } catch (err) {
-            throw new NotFoundException('Comment not found');
-        }
+        return await this.postCommentsService.findPostComment(id);
     }
 
     @Post()

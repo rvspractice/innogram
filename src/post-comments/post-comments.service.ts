@@ -20,8 +20,13 @@ export class PostCommentsService {
         return this.postCommentsRepository.find({ relations: ['user', 'post'] });
     }
 
-    async findPostComment(id: string): Promise<PostCommentEntity | null> {
-        return this.postCommentsRepository.findOne({ where: { id }, relations: ['user', 'post'] });
+    async findPostComment(id: string): Promise<PostCommentEntity> {
+        const comment = await this.postCommentsRepository.findOne({ where: { id }, relations: ['user', 'post'] });
+        if (!comment) {
+            throw new NotFoundException(`Comment with ID "${id}" not found`);
+        }
+
+        return comment;
     }
 
     async removePostComment(id: string): Promise<void> {
@@ -46,7 +51,6 @@ export class PostCommentsService {
         postComment.user = creator;
         postComment.post = post;
         postComment.content = createPostCommentDto.content;
-        postComment.created_at = new Date();
 
         return this.postCommentsRepository.save(postComment);
     }
