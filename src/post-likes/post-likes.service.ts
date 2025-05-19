@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AppErrorCode } from '../shared/error-codes.enums';
 import { PostLikeEntity } from './entities/post-like.entity';
 import { Repository } from 'typeorm';
 import { CreatePostLikeDto } from './dto/create-post-like.dto';
@@ -18,10 +19,10 @@ export class PostLikesService {
     ) { }
 
     async findPostLike(id: string): Promise<PostLikeEntity> {
-        const postLike = await this.postLikesRepository.findOne({ where: { id } });
+        const postLike = await this.postLikesRepository.findOneBy({ id });
 
         if (!postLike) {
-            throw new NotFoundException(`Like with ID "${id}" not found`);
+            throw new NotFoundException(AppErrorCode.LIKE_NOT_FOUND);
         }
 
         return postLike;
@@ -38,16 +39,14 @@ export class PostLikesService {
         ]);
 
         if (!creator) {
-            throw new NotFoundException(`User with id ${createPostLikeDto.userId} not found`);
+            throw new NotFoundException(AppErrorCode.USER_NOT_FOUND);
         }
 
         if (!post) {
-            throw new NotFoundException(`Post with id ${createPostLikeDto.postId} not found`);
+            throw new NotFoundException(AppErrorCode.POST_NOT_FOUND);
         }
 
-        const postLike = new PostLikeEntity();
-        postLike.user = creator;
-        postLike.post = post;
+        const postLike = this.postLikesRepository.create({user: creator, post})
 
         return this.postLikesRepository.save(postLike);
     }

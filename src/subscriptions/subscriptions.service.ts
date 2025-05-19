@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AppErrorCode } from '../shared/error-codes.enums';
+
 import { SubscriptionEntity } from './entities/subscription.entity';
 import { Repository } from 'typeorm';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -23,7 +25,7 @@ export class SubscriptionsService {
         const subscription = await this.subscriptionsRepository.findOneBy({ id });
 
         if (!subscription) {
-            throw new NotFoundException(`Subscription with ID "${id}" not found`);
+            throw new NotFoundException(AppErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
 
         return subscription;
@@ -35,7 +37,7 @@ export class SubscriptionsService {
 
     async createSubscription(createSubscriptionDto: CreateSubscriptionDto): Promise<SubscriptionEntity> {
         if (createSubscriptionDto.subscriberId === createSubscriptionDto.targetUserId) {
-            throw new BadRequestException('You can not subscribe to yourself');
+            throw new BadRequestException(AppErrorCode.CANNOT_SUBSCRIBE_YOURSELF);
         }
 
         const [subscriber, targetUser] = await Promise.all([
@@ -44,12 +46,10 @@ export class SubscriptionsService {
         ]);
 
         if (!subscriber || !targetUser) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException(AppErrorCode.USER_NOT_FOUND);
         }
 
-        const subscription = new SubscriptionEntity();
-        subscription.subscriber = subscriber;
-        subscription.targetUser = targetUser;
+        const subscription = this.subscriptionsRepository.create({ subscriber, targetUser });
 
         return this.subscriptionsRepository.save(subscription);
     }
@@ -58,7 +58,7 @@ export class SubscriptionsService {
         const subscription = await this.findSubscriptionBtId(id);
 
         if (!subscription) {
-            throw new Error(`Subscription with id ${id} not found`);
+            throw new NotFoundException(AppErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
 
         const { subscriberId, targetUserId } = updateSubscriptionDto;
@@ -68,10 +68,10 @@ export class SubscriptionsService {
         ]);
 
         if (!subscriber || !targetUser) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException(AppErrorCode.USER_NOT_FOUND);
         }
         if (subscriberId === targetUserId) {
-            throw new BadRequestException('You can not subscribe to yourself');
+            throw new BadRequestException(AppErrorCode.CANNOT_SUBSCRIBE_YOURSELF);
         }
 
         subscription.subscriber = subscriber;
