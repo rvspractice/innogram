@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AppErrorCode } from '../shared/error-codes.enums';
 import { PostEntity } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -23,7 +24,7 @@ export class PostsService {
         const post = await this.postsRepository.findOneBy({ id });
 
         if (!post) {
-            throw new NotFoundException(`Post with ID "${id}" not found`);
+            throw new NotFoundException(AppErrorCode.POST_NOT_FOUND);
         }
 
         return post;
@@ -46,7 +47,7 @@ export class PostsService {
         const post = await this.findPostById(id);
 
         if (!post) {
-            throw new Error(`Post with id ${id} not found`);
+            throw new NotFoundException(AppErrorCode.POST_NOT_FOUND);
         }
 
         await this.postsRepository.update(id, updatePostDto);
@@ -57,16 +58,12 @@ export class PostsService {
     }
 
     async findPostLikes(id: string): Promise<PostLikeEntity[]> {
-        const postLike = await this.postLikesRepository.find({
+        const postLikes = await this.postLikesRepository.find({
             where: { post: { id } },
             relations: ['user'],
         });
 
-        if (!postLike) {
-            throw new NotFoundException(`Like with ID "${id}" not found`);
-        }
-
-        return postLike;
+        return postLikes;
     }
 
 }
