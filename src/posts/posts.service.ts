@@ -1,0 +1,69 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AppErrorCode } from '../shared/error-codes.enums';
+import { PostEntity } from './entities/post.entity';
+import { Repository } from 'typeorm';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { PostLikeEntity } from 'src/post-likes/entities/post-like.entity';
+import { CreatePostDto } from './dto/create-post.dto';
+
+@Injectable()
+export class PostsService {
+    constructor(
+        @InjectRepository(PostEntity)
+        private postsRepository: Repository<PostEntity>,
+        @InjectRepository(PostLikeEntity)
+        private postLikesRepository: Repository<PostLikeEntity>,
+    ) { }
+
+    findAllPosts(): Promise<PostEntity[]> {
+        return this.postsRepository.find({ relations: ['author'] });
+    }
+
+    async findPostById(id: string): Promise<PostEntity> {
+        const post = await this.postsRepository.findOneBy({ id });
+
+        if (!post) {
+            throw new NotFoundException(AppErrorCode.POST_NOT_FOUND);
+        }
+
+        return post;
+    }
+
+
+    async removePost(id: string): Promise<void> {
+        await this.postsRepository.delete(id);
+    }
+
+    async createPost(createPostDto: CreatePostDto): Promise<PostEntity> {
+        const post = this.postsRepository.create({
+            ...createPostDto,
+        });
+
+        return this.postsRepository.save(post);
+    }
+
+    async updatePost(id: string, updatePostDto: UpdatePostDto): Promise<PostEntity> {
+        const post = await this.findPostById(id);
+
+        if (!post) {
+            throw new NotFoundException(AppErrorCode.POST_NOT_FOUND);
+        }
+
+        await this.postsRepository.update(id, updatePostDto);
+
+        const updatedPost = await this.findPostById(id);
+
+        return updatedPost;
+    }
+
+    async findPostLikes(id: string): Promise<PostLikeEntity[]> {
+        const postLikes = await this.postLikesRepository.find({
+            where: { post: { id } },
+            relations: ['user'],
+        });
+
+        return postLikes;
+    }
+
+}
