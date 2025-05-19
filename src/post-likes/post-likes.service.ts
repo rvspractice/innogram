@@ -18,8 +18,7 @@ export class PostLikesService {
     ) { }
 
     async findPostLike(id: string): Promise<PostLikeEntity> {
-        const postLike = await this.postLikesRepository.findOne({ where: { id } });
-
+        const postLike = await this.postLikesRepository.findOneBy({ id });
 
         if (!postLike) {
             throw new NotFoundException(`Like with ID "${id}" not found`);
