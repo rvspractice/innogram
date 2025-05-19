@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from '../posts/entities/post.entity';
+import { AppErrorCode } from '../shared/error-codes.enums';
 import { UserEntity } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { PostCommentEntity } from './entities/post-comment.entity';
@@ -23,7 +24,7 @@ export class PostCommentsService {
     async findPostComment(id: string): Promise<PostCommentEntity> {
         const comment = await this.postCommentsRepository.findOne({ where: { id }, relations: ['user', 'post'] });
         if (!comment) {
-            throw new NotFoundException(`Comment with ID "${id}" not found`);
+            throw new NotFoundException(AppErrorCode.COMMENT_NOT_FOUND);
         }
 
         return comment;
@@ -34,25 +35,28 @@ export class PostCommentsService {
     }
 
     async createPostComment(createPostCommentDto: any): Promise<PostCommentEntity> {
+        const { userId, postId, content } = createPostCommentDto;
+
         const [creator, post] = await Promise.all([
-            this.userRepository.findOneBy({ id: createPostCommentDto.userId }),
-            this.postsRepository.findOneBy({ id: createPostCommentDto.postId }),
+            this.userRepository.findOneBy({ id: userId }),
+            this.postsRepository.findOneBy({ id: postId }),
         ]);
 
         if (!creator) {
-            throw new NotFoundException(`User with id ${createPostCommentDto.userId} not found`);
+            throw new NotFoundException(AppErrorCode.USER_NOT_FOUND);
         }
 
         if (!post) {
-            throw new NotFoundException(`Post with id ${createPostCommentDto.postId} not found`);
+            throw new NotFoundException(AppErrorCode.POST_NOT_FOUND);
         }
 
-        const postComment = new PostCommentEntity();
-        postComment.user = creator;
-        postComment.post = post;
-        postComment.content = createPostCommentDto.content;
+        const newComment = this.postCommentsRepository.create({
+            content,
+            user: creator,
+            post: post,
+        });
 
-        return this.postCommentsRepository.save(postComment);
+        return this.postCommentsRepository.save(newComment);
     }
 
 

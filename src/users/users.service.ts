@@ -79,7 +79,7 @@ export class UsersService {
     async findSubscriptions(id: string): Promise<UserEntity[]> {
         return await this.usersRepository.find({
             where: { id },
-            relations: ['targetUser'],
+            relations: ['subscribers'],
         });
     }
 
@@ -90,16 +90,10 @@ export class UsersService {
         });
     }
 
-    async findPostComments(id: string): Promise<PostCommentEntity[]> {
-        const postComment = this.postCommentsRepository.find({
-            where: { user: { id } },
-            relations: ['post'],
+    async findPostComments(id: string): Promise<UserEntity[]> {
+        return await this.usersRepository.find({
+            where: { id },
+            relations: ['comments'],
         });
-
-        if (!postComment) {
-            throw new NotFoundException(`Comment with ID "${id}" not found`);
-        }
-
-        return postComment;
     }
 }
