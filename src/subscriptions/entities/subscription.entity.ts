@@ -1,5 +1,5 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { Entity, ManyToOne, JoinColumn, Column } from 'typeorm';
+import { UserEntity } from '../../users/entities/user.entity';
 import { BaseEntity } from 'src/shared/base.entity';
 
 @Entity({ name: 'subscription' })

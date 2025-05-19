@@ -5,12 +5,15 @@ import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PostCommentEntity } from '../post-comments/entities/post-comment.entity';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UserEntity)
-        private usersRepository: Repository<UserEntity>
+        private usersRepository: Repository<UserEntity>,
+        @InjectRepository(PostCommentEntity)
+        private postCommentsRepository: Repository<PostCommentEntity>,
     ) { }
 
     findAll(): Promise<UserEntity[]> {
@@ -76,7 +79,7 @@ export class UsersService {
     async findSubscriptions(id: string): Promise<UserEntity[]> {
         return await this.usersRepository.find({
             where: { id },
-            relations: ['targetUser'],
+            relations: ['subscribers'],
         });
     }
 
@@ -87,4 +90,10 @@ export class UsersService {
         });
     }
 
+    async findPostComments(id: string): Promise<UserEntity[]> {
+        return await this.usersRepository.find({
+            where: { id },
+            relations: ['comments'],
+        });
+    }
 }

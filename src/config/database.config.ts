@@ -1,4 +1,5 @@
 import 'dotenv/config'; // load .env variables
+import * as path from 'path';
 
 import { DataSourceOptions } from "typeorm";
 
@@ -10,5 +11,5 @@ export const databaseConfig: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   synchronize: true, // Set to false in production !!
-  migrations: ['src/migrations/*.ts'],
+  migrations: [path.join(__dirname, '../migrations/*.ts')],
 };

@@ -60,6 +60,11 @@ export class UsersController {
     async getUserPostLikes(@Param('id', ParseUUIDPipe) id: string) {
         return await this.usersService.findPostLikes(id);
     }
+
+    @Get(':id/comments')
+    async getUserPostComments(@Param('id', ParseUUIDPipe) id: string) {
+        return await this.usersService.findPostComments(id); 
+    }
     
 
 }
